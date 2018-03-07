@@ -30,7 +30,10 @@ app.get('/', function(req, res) {
     connection.query('SELECT * from user', function(err, rows, fields) {
         if (!err){
             console.log('The solution is: ', rows);
-            res.send(rows);
+            res.render('index', {
+                title: 'test1',
+                table: rows
+            });
         }
         else
           console.log('Error while performing Query.');
