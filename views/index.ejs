@@ -1,25 +1,8 @@
 <% include partials/header %>
 
-    <h1><%= title %></h1>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>user_id</th>
-                <th>count_user</th>
-                <th>time_avg</th>
-                <th>time_range</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% table.forEach(function(d) { %>
-            <tr>
-            <td><%= d.user_id %></td>
-            <td><%= d.count_user %></td>
-            <td><%= d.time_avg %></td>
-            <td><%= d.time_range %></td>
-            </tr>
-            <% }) %>
-        </tbody>
-    </table>
+    <h1><a href="/test1">test1</a></h1><br><br>
+    <h1><a href="/test2">test2</a></h1><br><br>
+    <h1><a href="/test3">test3</a></h1><br><br>
+    
 
 <% include partials/footer %> 

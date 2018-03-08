@@ -10,8 +10,6 @@ var connection = mysql.createConnection({
     database : 'intern_test'
 });
 
-
-
 var app = express();
 
 // View Engine
@@ -33,12 +31,16 @@ connection.connect(function(err){
     }
 });
 
-app.get("/",function(req,res){
-    let sql = 'SELECT user_id,COUNT(user_id) AS count_user, AVG(HOUR(TIMEDIFF(time_in,time_out))+MINUTE(TIMEDIFF(time_in,time_out))/60) AS time_avg,DATEDIFF(MAX(time_in),MIN(time_in)) AS time_range FROM visit GROUP BY user_id';
+app.get('/',function(req,res){
+    res.render('index');
+});
+
+app.get("/test1",function(req,res){
+    let sql = 'SELECT user.name AS user,COUNT(visit.user_id) AS count_user, AVG(HOUR(TIMEDIFF(visit.time_in,visit.time_out))+MINUTE(TIMEDIFF(visit.time_in,visit.time_out))/60) AS time_avg, DATEDIFF(MAX(visit.time_in),MIN(visit.time_in)) AS time_range FROM visit JOIN user ON visit.user_id = user.id GROUP BY user_id';
     connection.query(sql, function(err, rows, fields) {
         if (!err){
             console.log('The solution is: ', rows);
-            res.render('index',{
+            res.render('page1',{
                 title: 'TEST1',
                 table: rows
             });
@@ -49,7 +51,7 @@ app.get("/",function(req,res){
 });
 
 app.get("/test2",function(req,res){
-    let sql = 'SELECT *, COUNT(IFNULL(service_id,0)) AS count_service from visit GROUP BY service_id';
+    let sql = 'SELECT service.name, COUNT(IFNULL(service_id,0)) AS count_service FROM visit LEFT JOIN service ON visit.service_id = service.id GROUP BY service_id';
     connection.query(sql, function(err, rows, fields) {
         if (!err){
             console.log('The solution is: ', rows);
@@ -64,8 +66,7 @@ app.get("/test2",function(req,res){
 });
 
 app.get("/test3",function(req,res){
-    // let sql = 'SELECT *,  AS count_service FROM visit GROUP BY user_id, service_id';
-    let sql = 'SELECT *,IFNULL(service_id,0) AS service_id, COUNT(IFNULL(service_id,0)) AS count_service, DATE_FORMAT(time_in, "%d %m %T") AS time_in, DATE_FORMAT(time_out, "%d %m %T") AS time_out, AVG(HOUR(TIMEDIFF(time_out,time_in))*60 + MINUTE(TIMEDIFF(time_out,time_in))) AS time FROM visit WHERE HOUR(TIMEDIFF(time_out,time_in))*60 + MINUTE(TIMEDIFF(time_out,time_in)) > 300 GROUP BY user_id,service_id';
+    let sql = 'SELECT user.name AS user, visit.service_id, service.name AS service, IFNULL(visit.service_id,0) AS service_id, COUNT(IFNULL(visit.service_id,0)) AS count_service, DATE_FORMAT(visit.time_in, "%d %m %T") AS time_in, DATE_FORMAT(visit.time_out, "%d %m %T") AS time_out, AVG(HOUR(TIMEDIFF(visit.time_out,visit.time_in))*60 + MINUTE(TIMEDIFF(visit.time_out,visit.time_in))) AS time_avg FROM visit LEFT JOIN user ON visit.user_id = user.id LEFT JOIN service ON visit.service_id = service.id WHERE HOUR(TIMEDIFF(visit.time_out,visit.time_in))*60 + MINUTE(TIMEDIFF(visit.time_out,visit.time_in)) > 300 GROUP BY user_id,service_id';
     connection.query(sql, function(err, rows, fields) {
         if (!err){
             console.log('The solution is: ', rows);
